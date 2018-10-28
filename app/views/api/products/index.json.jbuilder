@@ -8,6 +8,7 @@ json.array! @products.each do |products|
   json.discounted products.is_discounted?
   json.supplier products.supplier
   json.images products.image_url_list
+  json.categories products.categories
 end
 
 

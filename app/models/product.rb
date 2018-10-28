@@ -5,7 +5,11 @@ class Product < ApplicationRecord
   validates :name, uniqueness: true
   validates :description, length: { in: 10..500}
 
-  has_many :category_products 
+  has_many :category_products
+  has_many :categories, through: :category_products
+  # def categories 
+  #   category_products.map {|category_product| category_product.category}
+  # end  
    
   
   def tax 
