@@ -6,18 +6,28 @@ class Api::OrdersController < ApplicationController
     render "index.json.jbuilder" 
   end
 
-  def create 
-    product = Product.find_by(id: params[:product_id])
+  def create
+    @carted_product = CartedProduct.where(user_id: user, status: "carted")
+    subtotal = 0
+    tax = 0 
+    total = 0 
+    @carted_product.each do |user|
+      subtotal = subtotal + user.product.price * user.quantity
+      tax = tax + user.product.tax * user.quantity
+      total = total + user.product.total * user.quantity
+      user.status = "purchased"
+      user.save
+    end
 
     @order = Order.new(
       user_id: current_user.id,
-      product_id: params[:product_id],
-      quantity: params[:quantity],
-      subtotal: product.price * params[:quantity].to_i,
-      tax: product.tax * params[:quantity].to_i,
-      total: product.total * params[:quantity].to_i
+      subtotal: subtotal,
+      tax: tax,
+      total: total
     )
     @order.save
-    render "show.json.jbuilder"
+    if @order.save
+      render json: {message: "successfully ordered"}
+    end
   end
 end 
